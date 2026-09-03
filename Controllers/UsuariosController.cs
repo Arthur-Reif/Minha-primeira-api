@@ -7,21 +7,21 @@ namespace MinhaPrimeiraAPI.Controllers
     [Route("usuarios")]
     public class UsuariosController
     {
-        static private List<Usuario> usuarios  = new List<Usuario>();
+        static private List<Usuario> usuarios = new List<Usuario>();
 
         //Fazer um CRUD  Create, Read, Update, Delete  
         [HttpGet]
-        public List<Usuario> GetUsuario()  
-        {   
+        public List<Usuario> GetUsuario()
+        {
             return usuarios;
-        }     
-        
+        }
+
         [HttpGet]
         [Route("{id}")]
-        public Usuario GetUsuarioPorId([FromRoute] string id )
+        public Usuario GetUsuarioPorId([FromRoute] string id)
         {
-            Usuario resultado = null; 
-            foreach(var usuario in usuarios)
+            Usuario resultado = null;
+            foreach (var usuario in usuarios)
             {
                 if (usuario.Id == id)
                 {
@@ -35,7 +35,7 @@ namespace MinhaPrimeiraAPI.Controllers
         // app.MapGet("/usuarios/{id}/pedidos", GetPedidosUsuario);
         [HttpGet]
         [Route("{id}/pedidos")]
-        public string GetPedidosUsuario([FromRoute]string id)
+        public string GetPedidosUsuario([FromRoute] string id)
         {
             return "voce chamou o metodo Obter Pedidos do Usuario id " + id;
         }
@@ -43,20 +43,62 @@ namespace MinhaPrimeiraAPI.Controllers
         // app.MapPut("/usuarios", () => "voce chamou o metodo atualizar Usuarios");
 
         [HttpPut]
-        public string AtualizarUsuario()
+        [Route("{id}")]
+        public string AtualizarUsuario([FromRoute] string id, [FromBody] Usuario usuarioAtualizado)
         {
+            Usuario selecionado = null
+;
+
+foreach (var usuario in usuarios)
+            {
+                if(usuario.Id == id)
+                {
+                    selecionado = usuario;
+                    break;
+                }
+            }
+            if (selecionado == null)
+            {
+                return "usuario nao encontrdo";
+            }
+            //opçao de duas operaçoes. (para nosso caso faz sentido pq é teste)
+            // usuarios.Remove(selecionado);
+            // usuarios.Add(UsuarioAtualizado);
+
+            selecionado.Id = usuarioAtualizado.Id;
+            selecionado.Nome = usuarioAtualizado.Nome;
+            selecionado.Idade = usuarioAtualizado.Idade;
+
             return "voce chamou o metodo atualizar Usuarios";
         }
 
         // app.MapDelete("/usuarios", () => "voce chamou o metodo excluir Usuarios");
         [HttpDelete]
-        public string DeletarUsuario()
+        [Route("{id}")]
+        public string DeletarUsuario([FromRoute] string id)
         {
-            return "voce chamou o metodo excluir Usuarios";
+            Usuario usuarioParaDeletar = null;
+            foreach (var usuario in usuarios)
+            {
+                if (usuario.Id == id)
+                {
+                    usuarioParaDeletar = usuario;
+                    break;// Somente para interromper o loop pois já achamos oq queriamos
+                }
+            }
+            if (usuarioParaDeletar == null)
+            {
+                return "Não foi encontrado usaurio com o id" + id;
+            }
+            else
+            {
+                usuarios.Remove(usuarioParaDeletar);
+                return $"usuario de id {id} deletado";
+            }
         }
         // app.MapPost("/usuarios", CriarUsuario);
         [HttpPost]
-        public string CriarUsuario([FromBody]Usuario usuario)
+        public string CriarUsuario([FromBody] Usuario usuario)
         {
             usuarios.Add(usuario);
 
